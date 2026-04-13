@@ -1,0 +1,58 @@
+# LABORATORIO-SO3-MODULO-7
+MODULO 7
+
+# =========================
+# PRACTICA 1 - NFS
+# =========================
+
+# -------- EN SERVIDOR --------
+
+# Instalar NFS
+sudo apt update
+sudo apt install nfs-kernel-server -y
+
+# Crear carpeta y archivos
+mkdir -p /srv/OS3
+cd /srv/OS3
+for i in {1..100}; do touch Adrian$i.txt; done
+
+# Permisos
+sudo chmod -R 755 /srv/OS3
+sudo chown -R nobody:nogroup /srv/OS3
+
+# Configurar exports
+sudo nano /etc/exports
+
+# Agregar (cambia IP del cliente)
+/srv/OS3 192.168.1.0/24(rw,sync,no_subtree_check)
+
+# Aplicar cambios
+sudo exportfs -a
+sudo systemctl restart nfs-kernel-server
+
+# Ver exportaciones
+sudo exportfs -v
+
+
+# -------- EN CLIENTE LINUX --------
+
+# Instalar cliente NFS
+sudo apt install nfs-common -y
+
+# Crear punto de montaje
+mkdir ~/nfs
+
+# Montar manual
+sudo mount 192.168.1.100:/srv/OS3 ~/nfs
+
+# Ver archivos
+ls ~/nfs
+
+# Montaje automático
+sudo nano /etc/fstab
+
+# Agregar línea:
+192.168.1.100:/srv/OS3 /home/usuario/nfs nfs defaults 0 0
+
+# Probar
+sudo mount -a
